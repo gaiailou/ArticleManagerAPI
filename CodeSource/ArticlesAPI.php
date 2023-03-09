@@ -1,4 +1,6 @@
 <?php
+
+require 'ConnexionBD';
 //Verifier le role dans le token avant
 $bearer_token='';
 //recherche token
