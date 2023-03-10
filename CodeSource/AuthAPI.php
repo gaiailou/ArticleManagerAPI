@@ -1,6 +1,6 @@
 <?php
 
-include 'jwt_utils.php';
+require 'jwt_utils.php';
 require 'connexionbd.php';
 
 function isValidUser($username,$password){
@@ -49,5 +49,5 @@ if (isValidUser($data['username'], $data['password'])){
     $payload = array('username'=>$username,'role'=>$role,'exp'=>(time()+60));
 
     $jwt = generate_jwt($headers,$payload)
-}*/
+} */
 ?>
