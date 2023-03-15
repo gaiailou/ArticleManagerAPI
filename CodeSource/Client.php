@@ -1,7 +1,32 @@
 <?php
 
+$api_url = "http://localhost/ArticleManagerAPI/ArticlesAPI.php";
+
+// Initialisation d'une requête HTTP GET
+$ch = curl_init($api_url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+// Exécution de la requête et récupération de la réponse
+$response = curl_exec($ch);
+
+// Vérification des éventuelles erreurs
+if(curl_errno($ch)){
+    echo 'Erreur curl : ' . curl_error($ch);
+    exit();
+}
+
+// Fermeture de la connexion curl
+curl_close($ch);
+
+// Affichage de la réponse
+echo $response;
+
+?>
+
+<?php
+
  ////////////////// Cas des méthodes GET et DELETE //////////////////
- $url='http://127.0.0.1:3306/ArticleManagerAPI/APIREST/api.php';
+ $url='http://localhost/ArticleManagerAPI/ArticlesAPI.php';
  $result = file_get_contents($url,
  false,
  stream_context_create(array('http' => array('method' => 'GET'))) // ou DELETE
@@ -41,3 +66,4 @@ $result=json_decode($result,true,512,JSON_THROW_ON_ERROR);
     ?>
     </table>
 </html>
+
