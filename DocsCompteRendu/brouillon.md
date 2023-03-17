@@ -14,3 +14,22 @@ celles retournées ;
 authentifié avec le rôle publisher).
 
 ## Notre projet
+
+
+## Liste de chose a faire avant le 31/03
+
+- [ ] Faire l'API de génération de JWT avec authentification
+    - [x] Méthode POST local
+    - [x] Méthode POST avec BD
+    - [ ] Autre
+- [ ] Faire l'API de gestion des articles
+    - [x] Méthode GET avec BD - visu des articles
+    - [ ] Méthodes autres
+    - [ ] Gestion des roles
+- [ ] Uniformiser les codes (variables)
+- [ ] Commenter les codes
+- [ ] Faire la spé des méthodes proposées (voir consigne)
+- [ ] Faire les user story
+- [ ] Faire le compte rendu au propre
+- [ ] verifier la derniere vesion d'export de la BD
+- [ ] verifier le MCD par rapport à la BD
