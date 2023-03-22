@@ -21,6 +21,7 @@ switch ($http_method){
             foreach ($matchingData as $row) {
                 $matchingUsername = $row['username'];
                 $matchingPassword = $row['password'];
+                $matchingRole = $row['role'];
             }
 
             // Vérification si les identifiants sont corrects
