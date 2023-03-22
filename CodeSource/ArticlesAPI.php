@@ -36,6 +36,14 @@ switch ($http_method){
 
     /// Cas de la méthode POST
     case "POST" :
+        // Vérification si le JWT est fourni par le client
+        if(!is_null(get_bearer_token())){
+            if(is_jwt_valid(get_bearer_token())){
+                deliver_response(200, "Clé JWT valide", get_bearer_token());
+            }else{
+                deliver_response(401, "Erreur : Clé JWT non valide", get_bearer_token());
+            }
+        }
         /// Récupération des données envoyées par le Client
         $postedData = file_get_contents('php://input');
 
