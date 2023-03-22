@@ -48,7 +48,7 @@ switch ($http_method){
             if(is_jwt_valid(get_bearer_token())){
                 deliver_response(200, "Clé JWT valide", get_bearer_token());
             }else{
-                deliver_response(201, "Clé JWT non valide", get_bearer_token());
+                deliver_response(401, "Clé JWT non valide", get_bearer_token());
             }
         }
         break;
