@@ -47,10 +47,17 @@ switch ($http_method){
         }
         /// Récupération des données envoyées par le Client
         $postedData = file_get_contents('php://input');
-
-        /// Traitement
+        $blob=json_decode($postedData,true);
+        $Id_article = $blob['Id_article'];
+        $Date_publication = $blob['Date_publication'];
+        $Contenu = $blob['Contenu'];
+        $Publisher = $blob['Publisher'];
+        $req = $linkpdo->prepare('INSERT INTO article (Id_article,Date_publication,Contenu,Publisher) 
+        VALUES (:Id_article,:Date_publication,:Contenu,:Publisher)');
+        $req->execute(array('Id_article' => $Id_article,'Date_publication' => $Date_publication,'Contenu' => $Contenu, 'Publisher' => $Publisher));
+        
         /// Envoi de la réponse au Client
-        deliver_response(201, "Votre message", NULL);
+        deliver_response(201, "Askip ca marche", NULL);
         break;
 
     /// Cas de la méthode PUT
