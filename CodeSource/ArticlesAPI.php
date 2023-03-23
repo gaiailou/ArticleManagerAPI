@@ -66,8 +66,25 @@ switch ($http_method){
         $postedData = file_get_contents('php://input');
 
         /// Traitement
+        $blob=json_decode($postedData,true);
+        $Id_article = $blob['Id_article'];
+        $Date_publication = $blob['Date_publication'];
+        $Contenu = $blob['Contenu'];
+        $Publisher = $blob['Publisher'];
+        $requeteId_article = $linkpdo->prepare('SELECT * FROM article WHERE Id_article = :Id_article');
+        $requeteId_article->execute(array(':Id_article' => $Id_article));
+        $matchingData = $requeteId_article->fetchALL();
+        if($matchingData){
+            $req = $linkpdo->prepare('UPDATE article set Id_article = :Id_article,
+            Date_publication = :Date_publication,Contenu = :Contenu,Publisher = :Publisher ');
+            $req->execute(array('Id_article' => $Id_article,'Date_publication' => $Date_publication,'Contenu' => $Contenu,
+             'Publisher' => $Publisher));
+             deliver_response(200, "Askip ca marche", NULL);
+        }else{
+            deliver_response(401, "Erreur : Pas d'article trouvé pour l\'id donné", NULL);
+        }
         /// Envoi de la réponse au Client
-        deliver_response(200, "Votre message", NULL);
+        deliver_response(200, "Askip ca marche", NULL);
         break;
 
     /// Cas de la méthode DELETE
