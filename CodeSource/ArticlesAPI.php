@@ -23,7 +23,7 @@ switch ($http_method){
             $matchingData = $requeteArticles->fetchALL();
             //var_dump($matchingData);
             $blob=array();
-            $blob=json_encode($matchingData,true);
+            $blob=json_encode($matchingData,TRUE);
             //var_dump($blob);
         }
         /// Envoi de la réponse au Client
