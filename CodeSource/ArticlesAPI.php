@@ -12,12 +12,13 @@ switch ($http_method){
     case "GET" :
         /// Récupération des critères de recherche envoyés par le Client
         if (!empty($_GET['Id_article'])){
+            $Id_article=$_GET['Id_article'];
             $requeteId_article = $linkpdo->prepare('SELECT * FROM article WHERE Id_article = :Id_article');
-            $requeteId_article->execute(array('Id_article' => $Id_article));
+            $requeteId_article->execute(array(':Id_article' => $Id_article));
             $matchingData = $requeteId_article->fetchALL();
+            $blob=array();
             $blob=json_encode($matchingData);
         }else{
-            echo('je suis la');
             $requeteArticles = $linkpdo->prepare('SELECT * FROM article');
             $requeteArticles->execute();
             $matchingData = $requeteArticles->fetchALL();
