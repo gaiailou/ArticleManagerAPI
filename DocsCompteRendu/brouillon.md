@@ -24,7 +24,9 @@ authentifié avec le rôle publisher).
     - [ ] Autre
 - [ ] Faire l'API de gestion des articles
     - [x] Méthode GET avec BD - visu des articles
-    - [ ] Méthodes autres
+    - [x] Méthode POST avec BD
+    - [x] Méthode PUT avec BD
+    - [x] Méthode DELETE
     - [ ] Gestion des roles
 - [ ] Uniformiser les codes (variables)
 - [ ] Commenter les codes
