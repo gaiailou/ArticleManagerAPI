@@ -75,11 +75,10 @@ switch ($http_method){
         $requeteId_article->execute(array(':Id_article' => $Id_article));
         $matchingData = $requeteId_article->fetchALL();
         if($matchingData){
-            $req = $linkpdo->prepare('UPDATE article set Id_article = :Id_article,
-            Date_publication = :Date_publication,Contenu = :Contenu,Publisher = :Publisher ');
-            $req->execute(array('Id_article' => $Id_article,'Date_publication' => $Date_publication,'Contenu' => $Contenu,
-             'Publisher' => $Publisher));
-             deliver_response(200, "Askip ca marche", NULL);
+            $req = $linkpdo->prepare('UPDATE article set Date_publication = :Date_publication, Contenu = :Contenu, 
+            Publisher = :Publisher where Id_article = :Id_article');
+            $req->execute(array('Date_publication' => $Date_publication,'Contenu' => $Contenu,
+             'Publisher' => $Publisher,'Id_article' => $Id_article));
         }else{
             deliver_response(401, "Erreur : Pas d'article trouvé pour l\'id donné", NULL);
         }
