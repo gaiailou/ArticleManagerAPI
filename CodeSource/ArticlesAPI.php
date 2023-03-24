@@ -1,7 +1,6 @@
 <?php
 require('lib.php');
 
-
 /// Paramétrage de l'entête HTTP (pour la réponse au Client)
 header("Content-Type:application/json");
 
@@ -29,7 +28,7 @@ switch ($http_method){
             $req->execute(array('Id_article' => $Id_article,'Date_publication' => $Date_publication,'Contenu' => $Contenu, 'Publisher' => $Publisher));    
              deliver_response(200, "OK : données ajoutées", NULL);
         }else{
-            deliver_response(401, "Erreur : Identifiant déjà existant", NULL);
+            deliver_response(401, "Error : Identifiant déjà existant", NULL);
         }
 
     /// Cas de la méthode PUT
@@ -53,7 +52,7 @@ switch ($http_method){
              'Publisher' => $Publisher,'Id_article' => $Id_article));
              deliver_response(200, "OK : données mises à jour", NULL);
         }else{
-            deliver_response(401, "Erreur : Pas d'article trouvé pour l'id donné", NULL);
+            deliver_response(401, "Error : Pas d'article trouvé pour l'id donné", NULL);
         }
         break;
 
@@ -63,7 +62,14 @@ switch ($http_method){
             $Id_article=$_GET['Id_article'];
             $requeteId_article = $linkpdo->prepare('SELECT * FROM article WHERE Id_article = :Id_article');
             $requeteId_article->execute(array(':Id_article' => $Id_article));
-            deliver_response(200, "OK : article supprimé", NULL);
+            $matchingData = $requeteId_article->fetchALL();
+            if($matchingData){
+                $requeteId_article = $linkpdo->prepare('DELETE FROM article WHERE Id_article = :Id_article');
+                $requeteId_article->execute(array(':Id_article' => $Id_article));
+                deliver_response(200, "OK : article supprimé", NULL);
+            }else{
+                deliver_response(401, "Error : Pas d'article trouvé pour l'id donné", NULL);
+            }
         }else{
             deliver_response(400, "Error : DELETE ne fonctionne pas sans identifiant", NULL);
         }
