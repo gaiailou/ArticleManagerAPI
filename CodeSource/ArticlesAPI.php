@@ -110,7 +110,7 @@ switch ($http_method){
             $requeteId_article->execute(array(':Id_article' => $Id_article));
             $matchingData = $requeteId_article->fetchALL();
             $blob=array();
-            $blob=json_encode($matchingData);
+            $blob=json_encode($matchingData,true);
         }else{
             if ($role = 'publisher' or $role = 'moderator') {
                 $requeteId_article = $linkpdo->prepare('select COUNT(Est_like) as Nombre_like, article.* 
