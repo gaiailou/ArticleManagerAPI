@@ -25,19 +25,19 @@ function extract_user_role($jwt) {
 
     // check si JWT valide
     $is_valid = is_jwt_valid($jwt, $secret);
-    if (!$is_valid) {
+    if ($is_valid) {
+        // decode le payload
+        $jwt_parts = explode('.', $jwt);
+        $payload = base64_decode($jwt_parts[1]);
+        $decoded_payload = json_decode($payload);
+
+        // extrait le role
+        $user_role = $decoded_payload->role;
+
+        return $user_role;
+    }else{
         return null;
     }
-
-    // decode le payload
-    $jwt_parts = explode('.', $jwt);
-    $payload = base64_decode($jwt_parts[1]);
-    $decoded_payload = json_decode($payload);
-
-    // extrait le role
-    $user_role = $decoded_payload->role;
-
-    return $user_role;
 }
 
 // fonction pour extraire username de l'utilisateur du JWT
