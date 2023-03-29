@@ -5,7 +5,6 @@ require('lib.php');
 header("Content-Type:application/json");
 
 $role=extract_user_role(get_bearer_token());
-echo $role;
 if ($role = 'publisher') {
     $publisher=extract_username(get_bearer_token());
 }
