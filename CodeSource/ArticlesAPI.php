@@ -30,7 +30,7 @@ switch ($http_method){
                     $requeteId_article->execute(array(':Id_article' => $Id_article));
                     $matchingData = $requeteId_article->fetchALL();
                     if($matchingData){
-                        $req = $linkpdo->prepare('INSERT INTO interagir (Id_article,Publisher,Est_like) 
+                        $req = $linkpdo->prepare('INSERT INTO interagir (Id_article,Login,Est_like) 
                         VALUES (:Id_article,:Publisher,:Est_like)');
                         $req->execute(array('Id_article' => $Id_article,'Publisher' => $Publisher,'Est_like' => $Est_like));    
                         deliver_response(200, "OK : vote ajouté", NULL);
