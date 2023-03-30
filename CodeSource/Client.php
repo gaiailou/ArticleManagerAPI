@@ -22,7 +22,7 @@ $result = file_get_contents(
  $result=json_decode($result,true,512,JSON_THROW_ON_ERROR);
  $jwt = $result['data']; 
 
-if(isset($_POST['submitBTN'])) {
+if(!isset($_POST['submitBTN'])) {
     switch ($_POST['submitBTN']) {
         case 'Supprimer':
             // Récupération de l'ID de la phrase à supprimer
@@ -51,7 +51,7 @@ if(isset($_POST['submitBTN'])) {
             $result = file_get_contents($urlArticle,
                                             null,
                                             stream_context_create(array(
-                                            'http' => array('method' => 'POST', // ou PUT
+                                            'http' => array('method' => 'POST',
                                             'content' => $data_string,
                                             'header' => array('Content-Type: application/json'."\r\n"
                                             .'Content-Length: '.strlen($data_string)."\r\n"))))

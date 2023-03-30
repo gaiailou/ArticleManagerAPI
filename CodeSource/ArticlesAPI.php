@@ -22,7 +22,7 @@ switch ($http_method){
                 $Id_article = $_GET['Id_article'];
                 $Publisher = extract_username($token);
                 $Est_like = $blob['Est_like'];
-                $requeteLike = $linkpdo->prepare('SELECT * FROM interagir WHERE Id_article = :Id_article AND publisher=:publisher');
+                $requeteLike = $linkpdo->prepare('SELECT * FROM interagir WHERE Id_article = :Id_article AND Publisher=:Publisher');
                 $requeteLike->execute(array(':Id_article' => $Id_article, 'Publisher' => $Publisher));
                 $matchingData = $requeteLike->fetchALL();
                 if(!$matchingData){
@@ -186,17 +186,18 @@ switch ($http_method){
             $blob=json_encode($matchingData,true);
 
         }else{
-            if ($role == 'publisher' or $role == 'moderator') {
-                $requeteArticles = $linkpdo->prepare('select COUNT(Est_like) as Nombre_like, article.* 
-                                                        FROM interagir , article 
-                                                        where est_like = 1');
-            }else{
-                $requeteArticles = $linkpdo->prepare('SELECT date_publication, contenu, publisher FROM article');
-            }
-            $requeteArticles->execute();
-            $matchingData = $requeteArticles->fetchALL();
-            $blob=array();
-            $blob=json_encode($matchingData,true);
+                if ($role == 'publisher' or $role == 'moderator') {
+                    $requeteArticles = $linkpdo->prepare('select COUNT(Est_like) as Nombre_like, article.* 
+                                                            FROM interagir , article 
+                                                            where est_like = 1');
+                }else{
+                    $requeteArticles = $linkpdo->prepare('SELECT date_publication, contenu, publisher FROM article');
+                }
+                $requeteArticles->execute();
+                $matchingData = $requeteArticles->fetchALL();
+                $blob=array();
+                $blob=json_encode($matchingData,true);
+            
         }
         /// Envoi de la réponse au Client
         if ($blob){
