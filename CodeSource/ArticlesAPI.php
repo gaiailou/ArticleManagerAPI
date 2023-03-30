@@ -5,7 +5,7 @@ require('lib.php');
 header("Content-Type:application/json");
 
 $role=extract_user_role(get_bearer_token());
-if ($role = 'publisher') {
+if ($role == 'publisher') {
     $publisher=extract_username(get_bearer_token());
 }
 echo "role : " .$role;
@@ -15,7 +15,7 @@ switch ($http_method){
 
     /// Cas de la méthode POST
     case "POST" :
-        if ($role = 'publisher') {
+        if ($role == 'publisher') {
             /// Récupération des données envoyées par le Client
             $postedData = file_get_contents('php://input');
             if (!empty($_GET['Id_article'])){
@@ -44,7 +44,7 @@ switch ($http_method){
 
     /// Cas de la méthode PUT
     case "PUT" :
-        if ($role = 'publisher') {
+        if ($role == 'publisher') {
             /// Récupération des données envoyées par le Client
             $postedData = file_get_contents('php://input');
 
@@ -71,7 +71,7 @@ switch ($http_method){
         break;
 
     case "DELETE" : 
-        if ($role = 'publisher' or $role = 'moderator' ) {
+        if ($role == 'publisher' or $role == 'moderator' ) {
             /// Récupération des critères de recherche envoyés par le Client
             if (!empty($_GET['Id_article'])){
                 $Id_article=$_GET['Id_article'];
@@ -98,7 +98,7 @@ switch ($http_method){
         /// Récupération des critères de recherche envoyés par le Client
         if (!empty($_GET['Id_article'])){
             $Id_article=$_GET['Id_article'];
-            if ($role = 'publisher' or $role = 'moderator') {
+            if ($role == 'publisher' or $role == 'moderator') {
                 $requeteId_article = $linkpdo->prepare('select COUNT(Est_like) as Nombre_like, article.* 
                                                         FROM interagir , article 
                                                         where interagir.Id_article = article.Id_article 
@@ -111,7 +111,7 @@ switch ($http_method){
             $blob=array();
             $blob=json_encode($matchingData,true);
         }else{
-            if ($role = 'publisher' or $role = 'moderator') {
+            if ($role == 'publisher' or $role == 'moderator') {
                 $requeteId_article = $linkpdo->prepare('select COUNT(Est_like) as Nombre_like, article.* 
                                                         FROM interagir , article 
                                                         where est_like = 1');
