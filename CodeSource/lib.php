@@ -46,22 +46,22 @@ function extract_username($jwt) {
 
     if (!$jwt) {
         return null;
+    }else{
+        // vérifie si le JWT est valide
+        $is_valid = is_jwt_valid($jwt, $secret);
+        if ($is_valid) {
+            // décode le payload
+            $jwt_parts = explode('.', $jwt);
+            $payload = base64_decode($jwt_parts[1]);
+            $decoded_payload = json_decode($payload);
+
+            // extrait le nom d'utilisateur
+            $username = $decoded_payload->username;
+
+            return $username;
+        }else{
+            return null;
+        }
     }
-
-    // vérifie si le JWT est valide
-    $is_valid = is_jwt_valid($jwt, $secret);
-    if (!$is_valid) {
-        return null;
-    }
-
-    // décode le payload
-    $jwt_parts = explode('.', $jwt);
-    $payload = base64_decode($jwt_parts[1]);
-    $decoded_payload = json_decode($payload);
-
-    // extrait le nom d'utilisateur
-    $username = $decoded_payload->username;
-
-    return $username;
 }
 ?>
