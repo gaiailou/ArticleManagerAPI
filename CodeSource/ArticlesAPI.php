@@ -6,7 +6,7 @@ header("Content-Type:application/json");
 
 $role=extract_user_role(get_bearer_token());
 if ($role == 'publisher') {
-    $Publisher=extract_username(get_bearer_token());
+    $publisher=extract_username(get_bearer_token());
 }
 echo "role : " .$role;
 /// Identification du type de méthode HTTP envoyée par le client
@@ -24,7 +24,7 @@ switch ($http_method){
             /// Traitement
             $blob=json_decode($postedData,true);
             $Id_article = $blob['Id_article'];
-            $Date_publication = date("Y-m-d");
+            $Date_publication = $blob['Date_publication'];
             $Contenu = $blob['Contenu'];
             $requeteId_article = $linkpdo->prepare('SELECT * FROM article WHERE Id_article = :Id_article');
             $requeteId_article->execute(array(':Id_article' => $Id_article));
@@ -51,7 +51,7 @@ switch ($http_method){
             /// Traitement
             $blob=json_decode($postedData,true);
             $Id_article = $blob['Id_article'];
-            $Date_publication = date("Y-m-d"); //on considere est mis a jour lorsque l'on modidifie 
+            $Date_publication = $blob['Date_publication'];
             $Contenu = $blob['Contenu'];
             $requeteId_article = $linkpdo->prepare('SELECT * FROM article WHERE Id_article = :Id_article');
             $requeteId_article->execute(array(':Id_article' => $Id_article));
