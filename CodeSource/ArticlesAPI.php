@@ -8,7 +8,7 @@ $role=extract_user_role(get_bearer_token());
 if ($role = 'publisher') {
     $publisher=extract_username(get_bearer_token());
 }
-
+echo "role : " .$role;
 /// Identification du type de méthode HTTP envoyée par le client
 $http_method = $_SERVER['REQUEST_METHOD'];
 switch ($http_method){
