@@ -7,7 +7,6 @@ header("Content-Type:application/json");
 $token=get_bearer_token();
 $role=extract_user_role($token);
 
-echo "role : " .$role;
 /// Identification du type de méthode HTTP envoyée par le client
 $http_method = $_SERVER['REQUEST_METHOD'];
 switch ($http_method){
@@ -17,25 +16,47 @@ switch ($http_method){
         if ($role == 'publisher') {
             /// Récupération des données envoyées par le Client
             $postedData = file_get_contents('php://input');
-            if (!empty($_GET['Id_article'])){
-
-            }
-            /// Traitement
             $blob=json_decode($postedData,true);
-            $Id_article = $blob['Id_article'];
-            $Date_publication = date("Y-m-d");
-            $Contenu = $blob['Contenu'];
-            $Publisher = extract_username($token);
-            $requeteId_article = $linkpdo->prepare('SELECT * FROM article WHERE Id_article = :Id_article');
-            $requeteId_article->execute(array(':Id_article' => $Id_article));
-            $matchingData = $requeteId_article->fetchALL();
-            if(!$matchingData){
-                $req = $linkpdo->prepare('INSERT INTO article (Id_article,Date_publication,Contenu,Publisher) 
-                VALUES (:Id_article,:Date_publication,:Contenu,:Publisher)');
-                $req->execute(array('Id_article' => $Id_article,'Date_publication' => $Date_publication,'Contenu' => $Contenu, 'Publisher' => $Publisher));    
-                deliver_response(200, "OK : données ajoutées", NULL);
+            if (!empty($_GET['Id_article'])){
+            /// Ajout d'un like ou dislike
+                $Id_article = $_GET['Id_article'];
+                $Publisher = extract_username($token);
+                $Est_like = $blob['Est_like'];
+                $requeteLike = $linkpdo->prepare('SELECT * FROM interagir WHERE Id_article = :Id_article AND publisher=:publisher');
+                $requeteLike->execute(array(':Id_article' => $Id_article, 'Publisher' => $Publisher));
+                $matchingData = $requeteLike->fetchALL();
+                if(!$matchingData){
+                    $requeteId_article = $linkpdo->prepare('SELECT * FROM article WHERE Id_article = :Id_article');
+                    $requeteId_article->execute(array(':Id_article' => $Id_article));
+                    $matchingData = $requeteId_article->fetchALL();
+                    if($matchingData){
+                        $req = $linkpdo->prepare('INSERT INTO interagir (Id_article,Publisher,Est_like) 
+                        VALUES (:Id_article,:Publisher,:Est_like)');
+                        $req->execute(array('Id_article' => $Id_article,'Publisher' => $Publisher,'Est_like' => $Est_like));    
+                        deliver_response(200, "OK : vote ajouté", NULL);
+                    }else{
+                        deliver_response(401, "Error : Identifiant inexistant", NULL);
+                    }
+                }else{
+                    deliver_response(401, "Error : Vous avez déjà interagis avec cet article", NULL);
+                }
             }else{
-                deliver_response(401, "Error : Identifiant déjà existant", NULL);
+                /// Traitement
+                $Id_article = $blob['Id_article'];
+                $Date_publication = date("Y-m-d");
+                $Contenu = $blob['Contenu'];
+                $Publisher = extract_username($token);
+                $requeteId_article = $linkpdo->prepare('SELECT * FROM article WHERE Id_article = :Id_article');
+                $requeteId_article->execute(array(':Id_article' => $Id_article));
+                $matchingData = $requeteId_article->fetchALL();
+                if(!$matchingData){
+                    $req = $linkpdo->prepare('INSERT INTO article (Id_article,Date_publication,Contenu,Publisher) 
+                    VALUES (:Id_article,:Date_publication,:Contenu,:Publisher)');
+                    $req->execute(array('Id_article' => $Id_article,'Date_publication' => $Date_publication,'Contenu' => $Contenu, 'Publisher' => $Publisher));    
+                    deliver_response(200, "OK : données ajoutées", NULL);
+                }else{
+                    deliver_response(401, "Error : Identifiant déjà existant", NULL);
+                }
             }
         }else{
             deliver_response(401, "Error : Vous n'avez pas le role necessaire pour cette méthode", NULL);
@@ -101,13 +122,51 @@ switch ($http_method){
                     }
                 }
             }else{
-                deliver_response(400, "Error : DELETE ne fonctionne pas sans identifiant", NULL);
+                deliver_response(400, "Error : DELETE ne fonctionne pas sans identifiant article", NULL);
             }
         }else{
             deliver_response(401, "Error : Vous n'avez pas le role necessaire pour cette méthode", NULL);
         }
         break;
-
+    
+    case 'PATCH' :
+        if ($role == 'publisher') {
+            /// Récupération des données envoyées par le Client
+            $postedData = file_get_contents('php://input');
+            $blob=json_decode($postedData,true);
+            if (!empty($_GET['Id_article'])){
+            /// Ajout d'un like ou dislike
+                $Id_article = $_GET['Id_article'];
+                $Publisher = extract_username($token);
+                $Est_like = $blob['Est_like'];
+                $requeteLike = $linkpdo->prepare('SELECT * FROM interagir WHERE Id_article = :Id_article AND publisher=:publisher');
+                $requeteLike->execute(array(':Id_article' => $Id_article, 'Publisher' => $Publisher));
+                $matchingData = $requeteLike->fetchALL();
+                if($matchingData){
+                    $requeteId_article = $linkpdo->prepare('SELECT * FROM article WHERE Id_article = :Id_article');
+                    $requeteId_article->execute(array(':Id_article' => $Id_article));
+                    $matchingData = $requeteId_article->fetchALL();
+                    if($matchingData){
+                        $req = $linkpdo->prepare('UPDATE interagir set Est_like = :Est_like
+                                                WHERE Id_article = :Id_article and publisher=:publisher');
+                        $req->execute(array('Est_like' => $Est_like,'Id_article' => $Id_article,'Publisher' => $Publisher));    
+                        deliver_response(200, "OK : vote mis à jour", NULL);
+                    }else{
+                        deliver_response(401, "Error : Identifiant inexistant", NULL);
+                    }
+                }else{
+                    deliver_response(401, "Error : Vous avez déjà interagis avec cet article", NULL);
+                }
+            }else{
+                deliver_response(401, "Error : PATCH ne fonctionne pas sans identifiant article", NULL);
+            }
+        }else{
+            deliver_response(401, "Error : Vous n'avez pas le role necessaire pour cette méthode", NULL);
+        }
+        break;
+    
+            
+        
     /// Cas de la méthode GET
     default :
         /// Récupération des critères de recherche envoyés par le Client
@@ -128,17 +187,16 @@ switch ($http_method){
 
         }else{
             if ($role == 'publisher' or $role == 'moderator') {
-                $requeteId_article = $linkpdo->prepare('select COUNT(Est_like) as Nombre_like, article.* 
+                $requeteArticles = $linkpdo->prepare('select COUNT(Est_like) as Nombre_like, article.* 
                                                         FROM interagir , article 
                                                         where est_like = 1');
             }else{
-                $requeteId_article = $linkpdo->prepare('SELECT date_publication, contenu, publisher FROM article');
+                $requeteArticles = $linkpdo->prepare('SELECT date_publication, contenu, publisher FROM article');
             }
             $requeteArticles->execute();
             $matchingData = $requeteArticles->fetchALL();
             $blob=array();
             $blob=json_encode($matchingData,true);
-            //var_dump($blob);
         }
         /// Envoi de la réponse au Client
         if ($blob){
