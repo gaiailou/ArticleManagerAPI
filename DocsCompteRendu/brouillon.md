@@ -27,7 +27,8 @@ authentifié avec le rôle publisher).
     - [x] Méthode POST avec BD
     - [x] Méthode PUT avec BD
     - [x] Méthode DELETE
-    - [ ] Gestion des roles
+    - [x] Gestion des roles
+    - [ ] gerer les likes 
 - [ ] Uniformiser les codes (variables)
 - [ ] Commenter les codes
 - [ ] Faire la spé des méthodes proposées (voir consigne)
