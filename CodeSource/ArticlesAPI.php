@@ -4,9 +4,10 @@ require('lib.php');
 /// Paramétrage de l'entête HTTP (pour la réponse au Client)
 header("Content-Type:application/json");
 
-$role=extract_user_role(get_bearer_token());
+$token=get_bearer_token();
+$role=extract_user_role($token);
 if ($role == 'publisher') {
-    $publisher=extract_username(get_bearer_token());
+    $publisher=extract_username($token);
 }
 echo "role : " .$role;
 /// Identification du type de méthode HTTP envoyée par le client
@@ -110,6 +111,7 @@ switch ($http_method){
             $matchingData = $requeteId_article->fetchALL();
             $blob=array();
             $blob=json_encode($matchingData,true);
+
         }else{
             if ($role == 'publisher' or $role == 'moderator') {
                 $requeteId_article = $linkpdo->prepare('select COUNT(Est_like) as Nombre_like, article.* 
