@@ -4,10 +4,9 @@ require('lib.php');
 /// Paramétrage de l'entête HTTP (pour la réponse au Client)
 header("Content-Type:application/json");
 
-$role=extract_user_role(get_bearer_token());
-if ($role == 'publisher') {
-    $Publisher=extract_username(get_bearer_token());
-}
+$token=get_bearer_token();
+$role=extract_user_role($token);
+
 echo "role : " .$role;
 /// Identification du type de méthode HTTP envoyée par le client
 $http_method = $_SERVER['REQUEST_METHOD'];
@@ -26,6 +25,7 @@ switch ($http_method){
             $Id_article = $blob['Id_article'];
             $Date_publication = date("Y-m-d");
             $Contenu = $blob['Contenu'];
+            $Publisher = extract_username($token);
             $requeteId_article = $linkpdo->prepare('SELECT * FROM article WHERE Id_article = :Id_article');
             $requeteId_article->execute(array(':Id_article' => $Id_article));
             $matchingData = $requeteId_article->fetchALL();
@@ -51,10 +51,11 @@ switch ($http_method){
             /// Traitement
             $blob=json_decode($postedData,true);
             $Id_article = $blob['Id_article'];
-            $Date_publication = date("Y-m-d"); //on considere est mis a jour lorsque l'on modidifie 
+            $Date_publication = date("Y-m-d");//on considere que la date est mise a jour avec le PUT
             $Contenu = $blob['Contenu'];
-            $requeteId_article = $linkpdo->prepare('SELECT * FROM article WHERE Id_article = :Id_article');
-            $requeteId_article->execute(array(':Id_article' => $Id_article));
+            $Publisher = extract_username($token);
+            $requeteId_article = $linkpdo->prepare('SELECT * FROM article WHERE Id_article = :Id_article and publisher=:publisher');
+            $requeteId_article->execute(array(':Id_article' => $Id_article,':publisher'=>$Publisher));
             $matchingData = $requeteId_article->fetchALL();
             if($matchingData){
                 $req = $linkpdo->prepare('UPDATE article set Date_publication = :Date_publication, Contenu = :Contenu, 
@@ -75,15 +76,29 @@ switch ($http_method){
             /// Récupération des critères de recherche envoyés par le Client
             if (!empty($_GET['Id_article'])){
                 $Id_article=$_GET['Id_article'];
-                $requeteId_article = $linkpdo->prepare('SELECT * FROM article WHERE Id_article = :Id_article');
-                $requeteId_article->execute(array(':Id_article' => $Id_article));
-                $matchingData = $requeteId_article->fetchALL();
-                if($matchingData){
-                    $requeteId_article = $linkpdo->prepare('DELETE FROM article WHERE Id_article = :Id_article');
+                if ($role == 'moderator'){
+                    $requeteId_article = $linkpdo->prepare('SELECT * FROM article WHERE Id_article = :Id_article');
                     $requeteId_article->execute(array(':Id_article' => $Id_article));
-                    deliver_response(200, "OK : article supprimé", NULL);
+                    $matchingData = $requeteId_article->fetchALL();
+                    if($matchingData){
+                        $requeteId_article = $linkpdo->prepare('DELETE FROM article WHERE Id_article = :Id_article');
+                        $requeteId_article->execute(array(':Id_article' => $Id_article));
+                        deliver_response(200, "OK : article supprimé", NULL);
+                    }else{
+                        deliver_response(401, "Error : Pas d'article trouvé pour l'id donné", NULL);
+                    }
                 }else{
-                    deliver_response(401, "Error : Pas d'article trouvé pour l'id donné", NULL);
+                    $Publisher = extract_username($token);
+                    $requeteId_article = $linkpdo->prepare('SELECT * FROM article 
+                                                            WHERE Id_article = :Id_article AND publisher=:publisher');
+                    $requeteId_article->execute(array(':Id_article' => $Id_article,':publisher'=>$Publisher));
+                    if($matchingData){
+                        $requeteId_article = $linkpdo->prepare('DELETE FROM article WHERE Id_article = :Id_article');
+                        $requeteId_article->execute(array(':Id_article' => $Id_article));
+                        deliver_response(200, "OK : article supprimé", NULL);
+                    }else{
+                        deliver_response(401, "Error : Pas d'article trouvé pour l'id donné ou votre pseudo", NULL);
+                    }
                 }
             }else{
                 deliver_response(400, "Error : DELETE ne fonctionne pas sans identifiant", NULL);
@@ -104,12 +119,13 @@ switch ($http_method){
                                                         where interagir.Id_article = article.Id_article 
                                                         and est_like = 1');
             }else{
-                $requeteId_article = $linkpdo->prepare('SELECT Date_publication, Contenu, Publisher FROM article WHERE Id_article = :Id_article');
+                $requeteId_article = $linkpdo->prepare('SELECT date_publication, contenu, publisher FROM article WHERE Id_article = :Id_article');
             }
             $requeteId_article->execute(array(':Id_article' => $Id_article));
             $matchingData = $requeteId_article->fetchALL();
             $blob=array();
             $blob=json_encode($matchingData,true);
+
         }else{
             if ($role == 'publisher' or $role == 'moderator') {
                 $requeteId_article = $linkpdo->prepare('select COUNT(Est_like) as Nombre_like, article.* 
