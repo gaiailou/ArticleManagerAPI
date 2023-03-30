@@ -27,7 +27,7 @@ switch ($http_method){
             // Vérification si les identifiants sont corrects
             if($matchingUsername == $username && $matchingPassword == $password){
                 $header = array('alg'=>'HS256','typ'=>'JWT');
-                $payload = array('username'=>$username,'role'=>$matchingRole , 'exp'=>(time()+60)); //expiration (60 secondes)
+                $payload = array('username'=>$username,'role'=>$matchingRole , 'exp'=>(time()+60*60)); //expiration (60*60 secondes)
                 
                 // Génération du JWT
                 $jwt = generate_jwt($header, $payload);

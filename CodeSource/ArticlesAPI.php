@@ -30,9 +30,9 @@ switch ($http_method){
                     $requeteId_article->execute(array(':Id_article' => $Id_article));
                     $matchingData = $requeteId_article->fetchALL();
                     if($matchingData){
-                        $req = $linkpdo->prepare('INSERT INTO interagir (Id_article,Login,Est_like) 
-                        VALUES (:Id_article,:Publisher,:Est_like)');
-                        $req->execute(array('Id_article' => $Id_article,'Publisher' => $Publisher,'Est_like' => $Est_like));    
+                        $req = $linkpdo->prepare('INSERT INTO interagir (Username,Id_article,Est_like) 
+                        VALUES (:Username,:Id_article,:Est_like)');
+                        $req->execute(array('Username' => $Publisher,'Id_article' => $Id_article,'Est_like' => $Est_like));    
                         deliver_response(200, "OK : vote ajouté", NULL);
                     }else{
                         deliver_response(401, "Error : Identifiant inexistant", NULL);
@@ -110,9 +110,9 @@ switch ($http_method){
                     }
                 }else{
                     $Publisher = extract_username($token);
-                    $requeteId_article = $linkpdo->prepare('SELECT * FROM article 
-                                                            WHERE Id_article = :Id_article AND publisher=:publisher');
-                    $requeteId_article->execute(array(':Id_article' => $Id_article,':publisher'=>$Publisher));
+                    $requeteId_article = $linkpdo->prepare('SELECT * FROM article WHERE Id_article = :Id_article AND Publisher = :Publisher');
+                    $requeteId_article->execute(array(':Id_article' => $Id_article,':Publisher'=>$Publisher));
+                    $matchingData = $requeteId_article->fetchALL();
                     if($matchingData){
                         $requeteId_article = $linkpdo->prepare('DELETE FROM article WHERE Id_article = :Id_article');
                         $requeteId_article->execute(array(':Id_article' => $Id_article));
@@ -139,23 +139,26 @@ switch ($http_method){
                 $Id_article = $_GET['Id_article'];
                 $Publisher = extract_username($token);
                 $Est_like = $blob['Est_like'];
-                $requeteLike = $linkpdo->prepare('SELECT * FROM interagir WHERE Id_article = :Id_article AND publisher=:publisher');
-                $requeteLike->execute(array(':Id_article' => $Id_article, 'Publisher' => $Publisher));
-                $matchingData = $requeteLike->fetchALL();
+                $requeteId_article = $linkpdo->prepare('SELECT * FROM article WHERE Id_article = :Id_article');
+                $requeteId_article->execute(array(':Id_article' => $Id_article));
+                $matchingData = $requeteId_article->fetchALL();
                 if($matchingData){
-                    $requeteId_article = $linkpdo->prepare('SELECT * FROM article WHERE Id_article = :Id_article');
-                    $requeteId_article->execute(array(':Id_article' => $Id_article));
-                    $matchingData = $requeteId_article->fetchALL();
+                    $requeteLike = $linkpdo->prepare('SELECT * FROM interagir WHERE Id_article = :Id_article AND Username=:Username');
+                    $requeteLike->execute(array(':Id_article' => $Id_article, 'Username' => $Publisher));
+                    $matchingData = $requeteLike->fetchALL();
                     if($matchingData){
                         $req = $linkpdo->prepare('UPDATE interagir set Est_like = :Est_like
-                                                WHERE Id_article = :Id_article and publisher=:publisher');
-                        $req->execute(array('Est_like' => $Est_like,'Id_article' => $Id_article,'Publisher' => $Publisher));    
+                                                WHERE Id_article = :Id_article and Username=:Username');
+                        $req->execute(array('Est_like' => $Est_like,'Id_article' => $Id_article,'Username' => $Publisher));    
                         deliver_response(200, "OK : vote mis à jour", NULL);
                     }else{
-                        deliver_response(401, "Error : Identifiant inexistant", NULL);
+                        $req = $linkpdo->prepare('INSERT INTO interagir (Username,Id_article,Est_like) 
+                        VALUES (:Username,:Id_article,:Est_like)');
+                        $req->execute(array('Username' => $Publisher,'Id_article' => $Id_article,'Est_like' => $Est_like));    
+                        deliver_response(200, "OK : vote ajouté", NULL);
                     }
                 }else{
-                    deliver_response(401, "Error : Vous avez déjà interagis avec cet article", NULL);
+                    deliver_response(401, "Error : Identifiant article inexistant", NULL);
                 }
             }else{
                 deliver_response(401, "Error : PATCH ne fonctionne pas sans identifiant article", NULL);
@@ -173,13 +176,22 @@ switch ($http_method){
         if (!empty($_GET['Id_article'])){
             $Id_article=$_GET['Id_article'];
             if ($role == 'publisher' or $role == 'moderator') {
-                $requeteId_article = $linkpdo->prepare('select COUNT(Est_like) as Nombre_like, article.* 
-                                                        FROM interagir , article 
-                                                        where interagir.Id_article = article.Id_article 
-                                                        and est_like = 1');
+                $requeteArticles = $linkpdo->prepare('SELECT GROUP_CONCAT(CASE WHEN Est_like = 1 THEN interagir.Username END) AS Likes,
+                                                            GROUP_CONCAT(CASE WHEN Est_like = 0 THEN interagir.Username END) AS Dislikes,
+                                                            COUNT(CASE WHEN Est_like = 1 THEN 1 END) AS Nombre_likes, 
+                                                            COUNT(CASE WHEN Est_like = 0 THEN 1 END) AS Nombre_dislikes, 
+                                                            article.*
+                                                            FROM article
+                                                            LEFT JOIN interagir ON article.Id_article = interagir.Id_article
+                                                            where Id_article = :Id_article');
             }else{
-                $requeteId_article = $linkpdo->prepare('SELECT date_publication, contenu, publisher FROM article WHERE Id_article = :Id_article');
-            }
+                $requeteId_article = $linkpdo->prepare('SELECT COUNT(CASE WHEN Est_like = 1 THEN 1 END) AS Nombre_likes, 
+                                                            COUNT(CASE WHEN Est_like = 0 THEN 1 END) AS Nombre_dislikes,
+                                                            Date_publication, Contenu, Publisher 
+                                                            FROM article
+                                                            LEFT JOIN interagir ON article.Id_article = interagir.Id_article 
+                                                            WHERE Id_article = :Id_article');
+                }
             $requeteId_article->execute(array(':Id_article' => $Id_article));
             $matchingData = $requeteId_article->fetchALL();
             $blob=array();
@@ -187,11 +199,21 @@ switch ($http_method){
 
         }else{
                 if ($role == 'publisher' or $role == 'moderator') {
-                    $requeteArticles = $linkpdo->prepare('select COUNT(Est_like) as Nombre_like, article.* 
-                                                            FROM interagir , article 
-                                                            where est_like = 1');
+                    $requeteArticles = $linkpdo->prepare('SELECT GROUP_CONCAT(CASE WHEN Est_like = 1 THEN interagir.Username END) AS Likes,
+                                                                GROUP_CONCAT(CASE WHEN Est_like = 0 THEN interagir.Username END) AS Dislikes, 
+                                                                COUNT(CASE WHEN Est_like = 1 THEN 1 END) AS Nombre_likes, 
+                                                                COUNT(CASE WHEN Est_like = 0 THEN 1 END) AS Nombre_dislikes,
+                                                                article.*
+                                                                FROM article
+                                                                LEFT JOIN interagir ON article.Id_article = interagir.Id_article
+                                                                GROUP BY article.Id_article');
                 }else{
-                    $requeteArticles = $linkpdo->prepare('SELECT date_publication, contenu, publisher FROM article');
+                    $requeteArticles = $linkpdo->prepare('SELECT COUNT(CASE WHEN Est_like = 1 THEN 1 END) AS Nombre_likes, 
+                                                                COUNT(CASE WHEN Est_like = 0 THEN 1 END) AS Nombre_dislikes,
+                                                                Date_publication, Contenu, Publisher 
+                                                                FROM article
+                                                                LEFT JOIN interagir ON article.Id_article = interagir.Id_article
+                                                                GROUP BY article.Id_article');
                 }
                 $requeteArticles->execute();
                 $matchingData = $requeteArticles->fetchALL();
