@@ -3,7 +3,7 @@ Projet de conception et développement d’API REST pour la gestion d’articles
 
 # Informations utiles à l’évaluation de notre projet :
 
-## MCD de la base de données pas à jour :
+## MCD de la base de données :
 <img src="https://github.com/gaiailou/ArticleManagerAPI/blob/main/DocsCompteRendu/MCD.PNG" alt="MCD">
 
 ## Documentation de notre API

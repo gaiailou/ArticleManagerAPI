@@ -8,7 +8,7 @@
 ## GET 
 - http://localhost/api/ArticleManagerAPI/CodeSource/articlesAPI.php
 avec ou sans Authorization: Bearer [JWT] (affichage différent selon le role)
-## GET avec articles id 
+## GET avec id_article 
 - http://localhost/api/ArticleManagerAPI/CodeSource/articlesAPI.php?Id_article=[valeur]
 avec ou sans Authorization: Bearer [JWT] (affichage différent selon le role)
 ## POST
