@@ -1,7 +1,7 @@
 # ArticleManagerAPI
 Projet de conception et développement d’API REST pour la gestion d’articles
 
-## Informations utiles à l’évaluation de notre projet
+# Informations utiles à l’évaluation de notre projet :
 
 ## Documentation de notre API
 
@@ -14,7 +14,7 @@ Chaque Like est stocker dans la table Interagir avec un ```username```, ```IdArt
 Chaque utilisateur est défini par un ```username```, un ```password``` et un ```role```.
 
 #### Contraintes de rôle :
-- Le ```moderator``` ne peut pas publier d'articles mais il peut les supprimer.
+- Le ```moderator``` ne peut pas publier d'articles ni interagir avec mais il peut les supprimer.
 - Le ```publisher``` peut publier des articles, modifier ceux qu'il a publier,
 et interagir avec les articles des autres publishers (like/dislike).
 - Une personne non connectée peut voir les articles mais ne peut pas interagir avec.
@@ -28,13 +28,44 @@ et interagir avec les articles des autres publishers (like/dislike).
 - ```GET``` avec ```?IdArticle=[IdArticle]``` : Affiche l'article pour IdArticle correspondant s'il existe
 - ```POST``` avec un json contenant ```Id_article=[valeur]``` et ```Contenu=[texte]```: publier un nouvel article (disponible avec le rôle publisher uniquement)
 - ```PUT``` avec ```?IdArticle=[IdArticle]```  avec un json contenant ```Id_article=[valeur]``` et ```Contenu=[texte]```: Modifier un article
-- ```PATCH``` avec ```?IdArticle=[IdArticle]``` avec un json contenant ```est_like=[1(like) ou 0(dislike)]``` : Permet de voter pour l'article pour IdArticle correspondant s'il existe (disponible avec le rôle publisher uniquement)
+- ```PATCH``` avec ```?IdArticle=[IdArticle]``` avec un json contenant ```est_like=[1(like) ou 0(dislike)]``` : Permet de voter pour l'article pour IdArticle correspondant s'il existe (disponible avec le rôle publisher uniquement) Nous avons consideré qu'en dehors de la création le like ne changer que de valeur, d'où l'utilisation du PATCH.
 - ```DELETE``` avec ```?IdArticle=[IdArticle]``` : Supprimer un article (disponible avec les rôles publisher et moderator)
+
+### Utilisation sur Postman :
+
+#### ```POST``` sur ```http://localhost/ArticleManagerAPI/CodeSource/authAPI.php```
+- Moderateur : ```{"username":"DarkModerator","password":"DARKMDP"}```
+- Publisher : ```{"username":"Bob","password":"BOBMDP"}```
+- Publisher :```{"username":"Camille58","password":"58MDP"}```
+
+#### ```GET``` 
+- ```http://localhost/api/ArticleManagerAPI/CodeSource/articlesAPI.php```
+- avec ou sans ```Authorization: Bearer [JWT]``` (affichage différent selon le role)
+#### ```GET``` avec id_article 
+- ```http://localhost/api/ArticleManagerAPI/CodeSource/articlesAPI.php?Id_article=[valeur]```
+- avec ou sans ```Authorization: Bearer [JWT]``` (affichage différent selon le role)
+#### ```POST```
+- ```http://localhost/api/ArticleManagerAPI/CodeSource/articlesAPI.php```
+- avec ```Authorization: Bearer [JWT]``` d'un publisher sinon erreur
+- et ```{"Id_article":"[valeur]","Contenu":"[valeur]"}```
+#### ```PUT```
+- ```http://localhost/api/ArticleManagerAPI/CodeSource/articlesAPI.php?Id_article=[valeur]```
+- avec ```Authorization: Bearer [JWT]``` du publisher de l'article sinon erreur
+- et ```{"Id_article":"[valeur]","Contenu":"[valeur]"}```
+#### ```PATCH```
+- ```http://localhost/api/ArticleManagerAPI/CodeSource/articlesAPI.php?Id_article=[valeur]```
+- avec ```Authorization: Bearer [JWT]``` d'un publisher différent de celui de l'article sinon erreur
+- et ```{"Est_like":"[ 0(like) ou 1(dislike) ou NULL(annulé)]"}```
+- Nous avons consideré qu'en dehors de la création le like ne changer que de valeur, d'où l'utilisation du PATCH
+#### ```DELETE```
+- ```http://localhost/api/ArticleManagerAPI/CodeSource/articlesAPI.php?Id_article=[valeur]```
+- avec ou sans ```Authorization: Bearer [JWT]``` moderator ou publisher de l'article sinon erreur
 
 ### Spécification des API REST du projet :
 
 #### Sur l'API authentification :
 
+```
 Identification du type de méthode HTTP envoyée par le client
 si la methode est{
     cas "POST" :
@@ -72,9 +103,11 @@ si la methode est{
         erreur 405, "Méthode non autorisée"
         Fin
 }
+```
 
 #### Sur l'API article :
 
+```
 Recuperation du JWT
 Extraction du role de l'utilisateur
 
@@ -226,8 +259,7 @@ si la methode est{
         }
         fin
 }
-
-   
+```
 
 ## Auteurs
 - Gaïa Ducournau
