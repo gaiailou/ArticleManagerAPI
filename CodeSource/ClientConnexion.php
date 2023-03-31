@@ -13,8 +13,5 @@
       <input type="password" id="password" name="password"><br><br>
       <input type="submit" value="Se connecter">
     </form>
-    <footer>
-        <p>Site réalisé par Gaïa et Chloé.</p>
-    </footer>
   </body>
 </html>

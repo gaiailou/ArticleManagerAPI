@@ -2,32 +2,50 @@
 $urlAuth='http://localhost/ArticleManagerAPI/CodeSource/authAPI.php';
 $urlArticle='http://localhost/ArticleManagerAPI/CodeSource/articlesAPI.php';
 
-$username=$_POST['username'];
-$data = array("username" => $username, "password" => $_POST['password']);
-$data_string = json_encode($data);
+if (isset($_POST['username'])) {
+    $username = $_POST['username'];
+} else {
+    $username = null;
+}
 
-///Connexion rapide 
-/*
-$jsonModerator='{"username":"DarkModerator","password":"DARKMDP"}';
-$jsonPublisher='{"username":"Bob","password":"BOBMDP"}';
-$jsonPublisher='{"username":"Camille58","password":"58MDP"}';
-$data_string=$jsonPublisher;
-*/
-//echo 'Les données connexion :'.$data_string;
-$result = file_get_contents(
-    $urlAuth,
-     null,
-     stream_context_create(array(
-    'http' => array('method' => 'POST',
-     'content' => $data_string,
-     'header' => array('Content-Type: application/json'."\r\n"
-     .'Content-Length: '.strlen($data_string)."\r\n"))))
-    );
-    /// Dans tous les cas, affichage des résultats
-    //echo '<pre>' .'Demande de création du JWT'. htmlspecialchars($result) . '</pre>';
- ////////////////// Cas des méthodes GET et DELETE //////////////////
- $result=json_decode($result,true,512,JSON_THROW_ON_ERROR);
- $jwt = $result['data'];
+if (isset($_POST['password'])) {
+    $password = $_POST['password'];
+} else {
+    $password = null;
+}
+
+if ($username or $password){
+    $data = array("username" => $username, "password" => $password);
+    $data_string = json_encode($data);
+
+    ///Connexion rapide sans la page de connexion
+    /*
+    $jsonModerator='{"username":"DarkModerator","password":"DARKMDP"}';
+    $jsonPublisher='{"username":"Bob","password":"BOBMDP"}';
+    $jsonPublisher='{"username":"Camille58","password":"58MDP"}';
+    $data_string=$jsonPublisher;
+    */
+    //echo 'Les données connexion :'.$data_string;
+    $result = file_get_contents(
+        $urlAuth,
+        null,
+        stream_context_create(array(
+        'http' => array('method' => 'POST',
+        'content' => $data_string,
+        'header' => array('Content-Type: application/json'."\r\n"
+        .'Content-Length: '.strlen($data_string)."\r\n"))))
+        );
+        /// Dans tous les cas, affichage des résultats
+        //echo '<pre>' .'Demande de création du JWT'. htmlspecialchars($result) . '</pre>';
+    ////////////////// Cas des méthodes GET et DELETE //////////////////
+    $result=json_decode($result,true,512,JSON_THROW_ON_ERROR);
+    $jwt = $result['data'];
+    setcookie('jwt', $jwt, time() + (86400 * 30), "/");
+    setcookie('username', $username, time() + (86400 * 30), "/");
+} else {
+    $jwt = $_COOKIE['jwt'];
+    $username = $_COOKIE['username']; 
+}
 
 if(isset($_POST['submitBTN'])) {
     switch ($_POST['submitBTN']) {
@@ -177,7 +195,7 @@ $result=json_decode($result['data'],true);
     </head>
     <body>
     <header>
-        <h1>Bonjour <?php echo $username; ?></h1>
+        <h1>Bonjour <?php if($username){echo $username;} ?></h1>
     </header>
     <h2>Joli tableau de moderateur ou publisher</h2>
     <table>
