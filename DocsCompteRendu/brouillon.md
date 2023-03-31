@@ -18,21 +18,26 @@ authentifié avec le rôle publisher).
 
 ## Liste de chose a faire avant le 31/03
 
-- [ ] Faire l'API de génération de JWT avec authentification
-    - [x] Méthode POST local
+- [x] Faire l'API de génération de JWT avec authentification
     - [x] Méthode POST avec BD
-    - [ ] Autre
 - [ ] Faire l'API de gestion des articles
     - [x] Méthode GET avec BD - visu des articles
     - [x] Méthode POST avec BD
     - [x] Méthode PUT avec BD
-    - [x] Méthode DELETE
-    - [x] Gestion des roles
-    - [ ] gerer les likes 
+    - [x] Méthode DELETE avec BD
+    - [ ] Méthode DELETE avec BD avec suppression des likes associé si besoin
+    - [x] Gestion des roles et JWT
+    - [x] gerer les likes 
 - [ ] Uniformiser les codes (variables)
+- [ ] verifier la sécurité (htmlspecialchart,...)
 - [ ] Commenter les codes
 - [ ] Faire la spé des méthodes proposées (voir consigne)
 - [ ] Faire les user story
 - [ ] Faire le compte rendu au propre
-- [ ] verifier la derniere vesion d'export de la BD
-- [ ] verifier le MCD par rapport à la BD
+- [x] verifier la derniere vesion d'export de la BD
+- [x] verifier le MCD par rapport à la BD
+- [ ] Faire le client 
+    - [x] Client sans connexion
+    - [x] Page connexion client
+    - [x] Client en mode connecter
+    - [ ] Page de modification d'un article
