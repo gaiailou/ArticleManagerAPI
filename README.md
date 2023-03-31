@@ -2,7 +2,6 @@
 Projet de conception et développement d’API REST pour la gestion d’articles
 
 ## Informations utiles à l’évaluation de notre projet
-(Ex : - URL d’accès à notre back-end)
 
 ## Documentation de notre API
 
