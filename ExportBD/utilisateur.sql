@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : ven. 17 mars 2023 à 09:59
+-- Généré le : ven. 31 mars 2023 à 00:54
 -- Version du serveur : 5.7.36
 -- Version de PHP : 7.4.26
 
@@ -29,20 +29,21 @@ SET time_zone = "+00:00";
 
 DROP TABLE IF EXISTS `utilisateur`;
 CREATE TABLE IF NOT EXISTS `utilisateur` (
-  `Username` varchar(50) COLLATE utf8_bin NOT NULL,
-  `Password` varchar(50) COLLATE utf8_bin DEFAULT NULL,
-  `Role` varchar(50) COLLATE utf8_bin DEFAULT NULL,
-  PRIMARY KEY (`Username`)
+  `username` varchar(50) COLLATE utf8_bin NOT NULL,
+  `password` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+  `role` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`username`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
 -- Déchargement des données de la table `utilisateur`
 --
 
-INSERT INTO `utilisateur` (`Username`, `Password`, `Role`) VALUES
+INSERT INTO `utilisateur` (`username`, `password`, `role`) VALUES
 ('DarkModerator', 'DARKMDP', 'moderator'),
 ('Bob', 'BOBMDP', 'publisher'),
-('Camille58', '58MDP', 'publisher');
+('Camille58', '58MDP', 'publisher'),
+('Baptiste ', 'JeanMange', 'Publisher');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : ven. 17 mars 2023 à 09:59
+-- Généré le : ven. 31 mars 2023 à 00:54
 -- Version du serveur : 5.7.36
 -- Version de PHP : 7.4.26
 
@@ -29,10 +29,10 @@ SET time_zone = "+00:00";
 
 DROP TABLE IF EXISTS `interagir`;
 CREATE TABLE IF NOT EXISTS `interagir` (
-  `Login` varchar(50) COLLATE utf8_bin NOT NULL,
+  `Username` varchar(50) COLLATE utf8_bin NOT NULL,
   `Id_article` varchar(50) COLLATE utf8_bin NOT NULL,
   `Est_like` tinyint(1) DEFAULT NULL,
-  PRIMARY KEY (`Login`,`Id_article`),
+  PRIMARY KEY (`Username`,`Id_article`),
   KEY `Id_article` (`Id_article`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
@@ -40,8 +40,9 @@ CREATE TABLE IF NOT EXISTS `interagir` (
 -- Déchargement des données de la table `interagir`
 --
 
-INSERT INTO `interagir` (`Login`, `Id_article`, `Est_like`) VALUES
-('Camille58', 'A0001', 1);
+INSERT INTO `interagir` (`Username`, `Id_article`, `Est_like`) VALUES
+('Camille58', 'A0001', 1),
+('Bob', 'A0001', 1);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

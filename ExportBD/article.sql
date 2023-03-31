@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : ven. 17 mars 2023 à 09:59
+-- Généré le : ven. 31 mars 2023 à 00:53
 -- Version du serveur : 5.7.36
 -- Version de PHP : 7.4.26
 
@@ -41,7 +41,10 @@ CREATE TABLE IF NOT EXISTS `article` (
 --
 
 INSERT INTO `article` (`Id_article`, `Date_publication`, `Contenu`, `Publisher`) VALUES
-('A0001', '2023-02-14', 'C\\\'est le jour de la saint valentin  \nBonne saint valentin a tous ', 'Bob');
+('A0001', '2022-11-16', 'Les comédiens ont un langage singulier : Ils se souviennent, improvisent, colorent leur mémoire, citent les formules oubliées, inventent même des phrases drôles, cruelles, qui se répètent et deviennent des citations.', 'Bob'),
+('A0002', '2023-01-05', 'Elle a rencontré son âme sœur dans un café, mais n\'a jamais eu le courage de lui parler. Des années plus tard, elle l\'a revu, marié et avec des enfants, et a réalisé qu\'elle avait laissé passer l\'amour de sa vie.', 'Camille58'),
+('A0003', '2023-03-01', 'Après des mois de voyage dans l\'espace, ils ont enfin atteint leur destination, seulement pour découvrir qu\'ils étaient arrivés dans un univers parallèle où tout était exactement pareil, sauf eux-mêmes.', 'Bob'),
+('A0004', '2023-03-31', 'Elle a trouvé une vieille boîte dans le grenier de sa grand-mère, remplie de lettres d\'amour de son grand-père décédé. En lisant les lettres, elle a réalisé que son grand-père avait été amoureux d\'une autre femme avant de rencontrer sa grand-mère.', 'Camille58');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
