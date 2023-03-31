@@ -36,7 +36,44 @@ et interagir avec les articles des autres publishers (like/dislike).
 
 #### Sur l'API authentification :
 
+Identification du type de méthode HTTP envoyée par le client
 
+si la methode est{
+    cas "POST" :
+        Récupération des données envoyées par le Client en format JSON 
+        convertir en tableau PHP
+        s'il y a des données dans username et password{
+            Recherche de l'utilisateur dans la base de données
+            si le usernmae et le password correspondent a ceux de la BD{
+                créer le Header JWT = array('alg'=>'HS256','typ'=>'JWT');
+                créer le payload JWT avec 'username', 'role' et temps d'expiration 1 heure
+                Génération du JWT
+
+                Si le JWT est valide{
+                     Reponse 200, "Clé JWT généré avec succés"
+                }Sinon{
+                    Erreur 401, "Clé JWT échoué"
+                }
+            }Sinon{
+                Erreur 401, "Erreur : Nom d'utilisateur ou mot de passe incorrect"
+            }
+        }Sinon{
+            Erreur 400, "Nom d'utilisateur ou mot de passe manquant"
+        }
+
+        si JWT fourni par le client{
+            Si JWT valide{
+                Reponse 200, "Clé JWT valide"
+            }Sinon{
+                Erreur 401, "Clé JWT non valide"
+            }
+        }
+        fin cas POST
+
+    si une autre méthode est envoyer :
+        erreur 405, "Méthode non autorisée"
+        Fin
+}
 
 #### Sur l'API article :
 
