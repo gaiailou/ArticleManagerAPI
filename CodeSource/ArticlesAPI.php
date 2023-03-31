@@ -175,7 +175,7 @@ switch ($http_method){
         /// Récupération des critères de recherche envoyés par le Client
         if (!empty($_GET['Id_article'])){
             $Id_article=$_GET['Id_article'];
-            if ($role == 'publisher' or $role == 'moderator') {
+            if ($role == 'moderator') {
                 $requeteArticles = $linkpdo->prepare('SELECT GROUP_CONCAT(CASE WHEN Est_like = 1 THEN interagir.Username END) AS Likes,
                                                             GROUP_CONCAT(CASE WHEN Est_like = 0 THEN interagir.Username END) AS Dislikes,
                                                             COUNT(CASE WHEN Est_like = 1 THEN 1 END) AS Nombre_likes, 
@@ -184,10 +184,15 @@ switch ($http_method){
                                                             FROM article
                                                             LEFT JOIN interagir ON article.Id_article = interagir.Id_article
                                                             where Id_article = :Id_article');
+            }elsif ($role == 'publisher') {
+                $requeteArticles = $linkpdo->prepare('SELECT COUNT(CASE WHEN Est_like = 1 THEN 1 END) AS Nombre_likes, 
+                                                            COUNT(CASE WHEN Est_like = 0 THEN 1 END) AS Nombre_dislikes, 
+                                                            article.*
+                                                            FROM article
+                                                            LEFT JOIN interagir ON article.Id_article = interagir.Id_article
+                                                            where Id_article = :Id_article');
             }else{
-                $requeteId_article = $linkpdo->prepare('SELECT COUNT(CASE WHEN Est_like = 1 THEN 1 END) AS Nombre_likes, 
-                                                            COUNT(CASE WHEN Est_like = 0 THEN 1 END) AS Nombre_dislikes,
-                                                            Date_publication, Contenu, Publisher 
+                $requeteId_article = $linkpdo->prepare('SELECT Date_publication, Contenu, Publisher 
                                                             FROM article
                                                             LEFT JOIN interagir ON article.Id_article = interagir.Id_article 
                                                             WHERE Id_article = :Id_article');
