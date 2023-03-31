@@ -105,7 +105,7 @@ switch ($http_method){
                     }
                 }else{
                     $Publisher = extract_username($token);
-                    $requeteId_article = $linkpdo->prepare('SELECT * FROM article WHERE Id_article = :Id_article AND Publisher = :Publisher');
+                    $requeteId_article = $linkpdo->prepare('SELECT * FROM article WHERE Id_article = :Id_article');
                     $requeteId_article->execute(array(':Id_article' => $Id_article));
                     $matchingData = $requeteId_article->fetchALL();
                     if($matchingData){

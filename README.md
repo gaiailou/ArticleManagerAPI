@@ -40,7 +40,158 @@ et interagir avec les articles des autres publishers (like/dislike).
 
 #### Sur l'API article :
 
-##### Cas de la méthode POST
+Recuperation du JWT
+Extraction du role de l'utilisateur
+
+Identification du type de méthode HTTP envoyée par le client
+si la methode est{
+
+    Cas "POST" :
+        si le role est 'publisher' alors{
+            Récupération des données envoyées par le Client
+            Decodage du json
+            si Id_article dans le lien n'est pas vide{
+                $Date_publication = date du jour
+                s'il n'y a pas Id_article dans le JSON{
+                    Erreur 400, " JSON incomplet, Id_article manquant"
+                }sinon{
+                    s'il n'y a pas Contenu dans le JSON{
+                         Erreur 400, " JSON incomplet, Contenu manquant"
+                    }sinon{
+                        extraire le publisher du JWT
+                        Si id article n'est pas déjà attribuer alors{
+                            inserer dans la base de données ce nouvel article avec toutes les informations   
+                            Reponse 200, "les données ont été ajoutées"
+                        }sinon{
+                             Erreur 409, "Identifiant déjà existant"
+                        }
+                    }
+                }
+            }sinon{
+                 Erreur 405, "Cette methode n'autorise pas de variable GET"
+            }
+        }sinon{
+            Erreur 403, "Vous n'avez pas le role necessaire pour cette méthode"
+        }
+        fin cas POST
+
+    Cas "PUT" :
+        si le role est 'publisher' alors{
+            Récupération des données envoyées par le Client
+            Decodage du json
+            extraire le publisher du JWT
+            Si id article est attribuer alors{
+                Si le publisher de l'article est le meme que celui qui PUT alors{
+                    modifier dans la base de données cet article avec toutes les informations   
+                    Reponse 200, "les données ont été mise a jour"
+                }sinon{
+                    Erreur 403, "Vous n'etes pas le pulisher de l'article, vous ne pouvez pas le modifier"
+                }
+            }sinon{
+                Erreur 404, "Pas d'article trouvé pour l'id donné"
+            }
+        }sinon{
+            Erreur 403, "Vous n'avez pas le role necessaire pour cette méthode"
+        }
+        fin cas PUT
+
+    cas "DELETE" : 
+        si le role est 'publisher' ou 'moderator' alors {
+            si l'id_article est bien dans le lien alors{
+                si le role est 'moderator' alors{
+                    S'il existe un article pour l'id donnée alors{
+                        Supprimer l'article 
+                        Reponse 200, "article supprimé"
+                    }sinon{
+                        Erreur 404, "Pas d'article trouvé pour l'id donné"
+                    }
+                }sinon{
+                    Extraire le publisher du JWT
+                    S'il existe un article pour l'id donnée alors{
+                        Si le publisher de l'article est le meme que celui qui DELETE alors{
+                            Effacer l'article
+                            Reponse 200, "OK : article supprimé"
+                        }sinon{
+                            Erreur 403, "Vous n'etes pas le pulisher de l'article, vous ne pouvez pas le supprimer"
+                        }
+                    }sinon{
+                        Erreur 404, "Pas d'article trouvé pour l'id donné"
+                    }
+                }
+            }sinon{
+                Erreur 400, "DELETE ne fonctionne pas sans identifiant article"
+            }
+        }sinon{
+            Erreur 403, "Vous n'avez pas le role necessaire pour cette méthode"
+        }
+        fin cas DELETE
+    
+    case 'PATCH' :
+        Si le role est publisher{
+            Récupération des données envoyées par le Client
+            Decode JSON
+            s'il n'y a pas d'id_article dans le lien{
+                extraire le publisher du JWT
+                Si l'article existe bien alors{
+                    Si le publisher n'est pas celui qui a publier l'article{
+                        Si le publisher a deja interagis avec l'article alors{
+                            Mettre a jour avec le nouveau vote   
+                            Reponse 200, "vote mis à jour"
+                        }sinon{
+                            Ajouter le vote dans la base de données   
+                            Reponse 200, "vote ajouté"
+                        }
+                    }sinon{
+                        Erreur 403, "Vous etes le pulisher de l'article, vous ne pouvez pas voter"
+                    }
+                }sinon{
+                    Erreur 404, "Identifiant article introuvable"
+                }
+            }sinon{
+                Erreur 400, "PATCH ne fonctionne pas sans identifiant article"
+            }
+        }sinon{
+            Erreur 403, "Vous n'avez pas le role necessaire pour cette méthode"
+        }
+        Fin cas PATCH
+        
+    Si ce n'est aucune des autres méthode alors c'est GET:
+        Récupération des critères de recherche envoyés par le Client
+        s'il y a id_article dans le lien alors{
+            si le role est 'moderator' {
+                Afficher pour l'article la liste des personnes qui ont like, ceux qui ont dislike,le nombre de like, de dislike, et toute les informations de article
+            }sinon {
+                Si le role est publisher{
+                    Afficher pour l'article le nombre de like, de dislike, et toute les informations de article
+                }sinon{
+                    Afficher pour l'article la Date_publication, Contenu et le Publisher 
+                }
+            }
+            Encode le resultat en JSON
+
+        }sinon{
+                si le role est 'moderator' {
+                    Afficher pour chaque article la liste des personnes qui ont like, ceux qui ont dislike,le nombre de like, de dislike, et toute les informations de article
+                }sinon {
+                    Si le role est publisher{
+                        Afficher pour chaque article le nombre de like, de dislike, et toute les informations de article
+                    }sinon{
+                        Afficher pour chaque article la Date_publication, Contenu et le Publisher 
+                    }
+                }
+                Encode le resultat en JSON
+                
+            
+        }
+        Envoi du resultat au Client
+        si le resultat n'est pas vide{
+            Reponse 200, "données récupérées"
+        }sinon{
+            Reponse 204, "Pas de résultat pour la requete demandé"
+        }
+        fin
+}
+
    
 
 ## Auteurs
