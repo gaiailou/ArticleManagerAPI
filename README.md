@@ -3,6 +3,9 @@ Projet de conception et développement d’API REST pour la gestion d’articles
 
 # Informations utiles à l’évaluation de notre projet :
 
+## MCD de la base de données pas à jour :
+<img src="https://github.com/gaiailou/ArticleManagerAPI/blob/main/DocsCompteRendu/MCD.PNG" alt="MCD">
+
 ## Documentation de notre API
 
 ### Définition d'un article :
@@ -260,6 +263,13 @@ si la methode est{
         fin
 }
 ```
+## Les User story
+
+- Moderateur : En tant que moderateur, je peux consulter les différents article avec la methode get, je peux aussi les supprimer peu importe le publisher à l'aide de la methode delete
+
+- Publisher : En tant que publisher, je peux utiliser la methode Post pour créer un article. Je peux aussi modifier un article de ma création à l'aide de la méthode put. Je peux supprimer mes articles avec la méthode Delete et je peux voter pour les articles des autres avec la methode patch
+
+- Anonyme : En tant que personne non connecté, je peux seulement consulter les articles.
 
 ## Auteurs
 - Gaïa Ducournau
