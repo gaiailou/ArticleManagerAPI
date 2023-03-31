@@ -2,11 +2,18 @@
 $urlAuth='http://localhost/ArticleManagerAPI/CodeSource/authAPI.php';
 $urlArticle='http://localhost/ArticleManagerAPI/CodeSource/articlesAPI.php';
 
+$username=$_POST['username'];
+$data = array("username" => $username, "password" => $_POST['password']);
+$data_string = json_encode($data);
+
+///Connexion rapide 
+/*
 $jsonModerator='{"username":"DarkModerator","password":"DARKMDP"}';
 $jsonPublisher='{"username":"Bob","password":"BOBMDP"}';
 $jsonPublisher='{"username":"Camille58","password":"58MDP"}';
 $data_string=$jsonPublisher;
-echo 'Les données connexion :'.$data_string;
+*/
+//echo 'Les données connexion :'.$data_string;
 $result = file_get_contents(
     $urlAuth,
      null,
@@ -17,7 +24,7 @@ $result = file_get_contents(
      .'Content-Length: '.strlen($data_string)."\r\n"))))
     );
     /// Dans tous les cas, affichage des résultats
-    echo '<pre>' .'Demande de création du JWT'. htmlspecialchars($result) . '</pre>';
+    //echo '<pre>' .'Demande de création du JWT'. htmlspecialchars($result) . '</pre>';
  ////////////////// Cas des méthodes GET et DELETE //////////////////
  $result=json_decode($result,true,512,JSON_THROW_ON_ERROR);
  $jwt = $result['data'];
@@ -152,7 +159,7 @@ if(isset($_POST['submitBTN'])) {
  $context = stream_context_create($options);
  
 $result = file_get_contents($urlArticle, false, $context);
-echo '<pre>' .'Resultat du GET :'. htmlspecialchars($result) . '</pre>';
+//echo '<pre>' .'Resultat du GET :'. htmlspecialchars($result) . '</pre>';
 try{
     $result=json_decode($result,true);
 } catch (JsonException $e) {
@@ -162,7 +169,16 @@ try{
 $result=json_decode($result['data'],true);
 
 ?>
+<!DOCTYPE html>
 <html>
+    <head>
+        <link rel="stylesheet" href="style.css" media="screen" type="text/css" />
+        <title>Client avec JWT</title>
+    </head>
+    <body>
+    <header>
+        <h1>Bonjour <?php echo $username; ?></h1>
+    </header>
     <h2>Joli tableau de moderateur ou publisher</h2>
     <table>
             <tr>
@@ -213,4 +229,8 @@ $result=json_decode($result['data'],true);
         <input type="text" id="Contenu" name="Contenu">
         <input type="submit" name="submitBTN" value="Ajouter">
     </form>
+    <footer>
+        <p>Site réalisé par Gaïa et Chloé.</p>
+    </footer>
+    </body>
 </html>
