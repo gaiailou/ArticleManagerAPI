@@ -63,7 +63,6 @@ switch ($http_method){
             $Date_publication = date("Y-m-d");//on considere que la date est mise a jour avec le PUT
             $Contenu = $blob['Contenu'];
             $Publisher = extract_username($token);
-            // SEPARER L'erreur ID article de Publisher mauvais
             $requeteId_article = $linkpdo->prepare('SELECT * FROM article WHERE Id_article = :Id_article');
             $requeteId_article->execute(array(':Id_article' => $Id_article));
             $matchingData = $requeteId_article->fetchALL();
@@ -128,7 +127,7 @@ switch ($http_method){
                 deliver_response(400, "Error : DELETE ne fonctionne pas sans identifiant article", NULL);
             }
         }else{
-            deliver_response(401, "Error : Vous n'avez pas le role necessaire pour cette méthode", NULL);
+            deliver_response(403, "Error : Vous n'avez pas le role necessaire pour cette méthode", NULL);
         }
         break;
     
@@ -171,10 +170,10 @@ switch ($http_method){
                     deliver_response(404, "Error : Identifiant article introuvable", NULL);
                 }
             }else{
-                deliver_response(401, "Error : PATCH ne fonctionne pas sans identifiant article", NULL);
+                deliver_response(400, "Error : PATCH ne fonctionne pas sans identifiant article", NULL);
             }
         }else{
-            deliver_response(401, "Error : Vous n'avez pas le role necessaire pour cette méthode", NULL);
+            deliver_response(403, "Error : Vous n'avez pas le role necessaire pour cette méthode", NULL);
         }
         break;
     
@@ -249,7 +248,7 @@ switch ($http_method){
         if ($blob){
             deliver_response(200, "OK : données récupérées", $blob);
         }else{
-            deliver_response(400, "Error : vide", $blob);
+            deliver_response(204, "Ok : Pas de résultat pour la requete demandé", $blob);
         }
         break;
 }

@@ -41,9 +41,11 @@ switch ($http_method){
             }else{
                 deliver_response(401, "Erreur : Nom d'utilisateur ou mot de passe incorrect", NULL);//Unauthorized
             }
+        }else{
+            deliver_response(400, "Erreur : Nom d'utilisateur ou mot de passe manquant", NULL);
         }
 
-        // Vérification si le JWT est fourni par le client
+        // Vérification de JWT si JWT fourni par le client
         if(!is_null(get_bearer_token())){
             if(is_jwt_valid(get_bearer_token())){
                 deliver_response(200, "Clé JWT valide", get_bearer_token());
