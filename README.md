@@ -37,7 +37,6 @@ et interagir avec les articles des autres publishers (like/dislike).
 #### Sur l'API authentification :
 
 Identification du type de méthode HTTP envoyée par le client
-
 si la methode est{
     cas "POST" :
         Récupération des données envoyées par le Client en format JSON 
@@ -70,7 +69,7 @@ si la methode est{
         }
         fin cas POST
 
-    si une autre méthode est envoyer :
+    cas si une autre méthode est envoyer :
         erreur 405, "Méthode non autorisée"
         Fin
 }
