@@ -17,34 +17,16 @@ switch ($http_method){
             /// Récupération des données envoyées par le Client
             $postedData = file_get_contents('php://input');
             $blob=json_decode($postedData,true);
-            if (!empty($_GET['Id_article'])){
-            /// Ajout d'un like ou dislike
-                $Id_article = $_GET['Id_article'];
-                $Publisher = extract_username($token);
-                $Est_like = $blob['Est_like'];
-                $requeteLike = $linkpdo->prepare('SELECT * FROM interagir WHERE Id_article = :Id_article AND Publisher=:Publisher');
-                $requeteLike->execute(array(':Id_article' => $Id_article, 'Publisher' => $Publisher));
-                $matchingData = $requeteLike->fetchALL();
-                if(!$matchingData){
-                    $requeteId_article = $linkpdo->prepare('SELECT * FROM article WHERE Id_article = :Id_article');
-                    $requeteId_article->execute(array(':Id_article' => $Id_article));
-                    $matchingData = $requeteId_article->fetchALL();
-                    if($matchingData){
-                        $req = $linkpdo->prepare('INSERT INTO interagir (Username,Id_article,Est_like) 
-                        VALUES (:Username,:Id_article,:Est_like)');
-                        $req->execute(array('Username' => $Publisher,'Id_article' => $Id_article,'Est_like' => $Est_like));    
-                        deliver_response(200, "OK : vote ajouté", NULL);
-                    }else{
-                        deliver_response(401, "Error : Identifiant inexistant", NULL);
-                    }
-                }else{
-                    deliver_response(401, "Error : Vous avez déjà interagis avec cet article", NULL);
-                }
-            }else{
+            if (empty($_GET['Id_article'])){
                 /// Traitement
                 $Id_article = $blob['Id_article'];
                 $Date_publication = date("Y-m-d");
                 $Contenu = $blob['Contenu'];
+                if (!$Id_article){
+                    deliver_response(400, "Error : JSON incomplet, Id_article manquant", NULL);
+                }elsif (!$Contenu){
+                    deliver_response(400, "Error : JSON incomplet, Contenu manquant", NULL);
+                }
                 $Publisher = extract_username($token);
                 $requeteId_article = $linkpdo->prepare('SELECT * FROM article WHERE Id_article = :Id_article');
                 $requeteId_article->execute(array(':Id_article' => $Id_article));
@@ -55,11 +37,13 @@ switch ($http_method){
                     $req->execute(array('Id_article' => $Id_article,'Date_publication' => $Date_publication,'Contenu' => $Contenu, 'Publisher' => $Publisher));    
                     deliver_response(200, "OK : données ajoutées", NULL);
                 }else{
-                    deliver_response(401, "Error : Identifiant déjà existant", NULL);
+                    deliver_response(409, "Error : Identifiant déjà existant", NULL);
                 }
+            }else{
+                deliver_response(405, "Error : Cette methode n'autorise pas de variable GET", NULL);
             }
         }else{
-            deliver_response(401, "Error : Vous n'avez pas le role necessaire pour cette méthode", NULL);
+            deliver_response(403, "Error : Vous n'avez pas le role necessaire pour cette méthode", NULL);
         }
         break;
 
@@ -75,6 +59,7 @@ switch ($http_method){
             $Date_publication = date("Y-m-d");//on considere que la date est mise a jour avec le PUT
             $Contenu = $blob['Contenu'];
             $Publisher = extract_username($token);
+            // SEPARER L'erreur ID article de Publisher mauvais
             $requeteId_article = $linkpdo->prepare('SELECT * FROM article WHERE Id_article = :Id_article and publisher=:publisher');
             $requeteId_article->execute(array(':Id_article' => $Id_article,':publisher'=>$Publisher));
             $matchingData = $requeteId_article->fetchALL();
@@ -85,10 +70,10 @@ switch ($http_method){
                 'Publisher' => $Publisher,'Id_article' => $Id_article));
                 deliver_response(200, "OK : données mises à jour", NULL);
             }else{
-                deliver_response(401, "Error : Pas d'article trouvé pour l'id donné", NULL);
+                deliver_response(404, "Error : Pas d'article trouvé pour l'id donné", NULL);
             }
         }else{
-            deliver_response(401, "Error : Vous n'avez pas le role necessaire pour cette méthode", NULL);
+            deliver_response(403, "Error : Vous n'avez pas le role necessaire pour cette méthode", NULL);
         }
         break;
 
